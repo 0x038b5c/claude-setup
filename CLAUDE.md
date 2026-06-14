@@ -1,0 +1,5 @@
+# claude-setup
+
+## Structure
+
+## Notes

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claude-setup"
+version = "0.1.0"
+description = "Bootstrap the claude loader system for one or more GitHub accounts"
+requires-python = ">=3.11"
+dependencies = [
+    "pyrage>=1.3.0",
+    "cryptography",
+    "click>=8.0",
+    "tomli-w",
+    "jinja2",
+    "requests",
+]
+
+[project.scripts]
+claude-setup = "claude_setup.__main__:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+claude_setup = ["templates/*.j2"]
