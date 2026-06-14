@@ -22,19 +22,14 @@
                 hash = "sha256-soOi49aIy/aMcH9X2T/aszBP9Xx+LmtxDAtLyQlq2do=";
               };
 
-              # pyrage is a maturin/PyO3 package — needs Rust build infrastructure
               nativeBuildInputs = with pkgs; [
                 rustPlatform.maturinBuildHook
                 rustPlatform.cargoSetupHook
-                cargo
-                rustc
               ];
 
               cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
                 inherit src;
-                # Run `nix build` once with hash = pkgs.lib.fakeHash, then
-                # replace this with the hash printed in the error message.
-                hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+                hash = "sha256-/dpxp+m/QakSxIP8t2dOtUK4Irac9C+ow5Jq1FlSTZE=";
               };
             };
           in
@@ -50,6 +45,7 @@
                   jinja2
                   requests
                   tomli-w
+
                   pyrage
                 ]))
               ];
