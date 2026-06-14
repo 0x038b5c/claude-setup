@@ -1,25 +1,17 @@
 ## What I was doing
-Building claude-setup — a CLI wizard that bootstraps the claude loader fleet.
+Integrating claude-setup, loader, and payload so the full chain works for any github_username
 
 ## What's done
-- Design spec: docs/superpowers/specs/2026-06-13-claude-setup-design.md
-- keys.py — age keypair + SSH keypair generation
-- secrets.py — armored age encryption (pyrage>=1.3.0)
-- config.py — GlobalConfig/AccountConfig dataclasses, TOML roundtrip
-- loader.py — build_loader_zip() for Mode A and Mode B
-- templates/main_mode_a.py.j2 — config-driven loader main.py
-- templates/main_mode_b.py.j2 — hardcoded loader main.py
-- repos.py — gh-optional repo creation (falls back to zip)
-- wizard.py — full interactive wizard flow
-- __main__.py — CLI entrypoint (click)
-- README.md
-- Full smoke test passing on all modules
+- Audited all three repos end-to-end
+- Confirmed .gitignore on claude-setup is already correct
+- Confirmed loader templates (mode A/B) already pass github_username to payload
+- Wrote integration plan: docs/superpowers/plans/2026-06-13-loader-payload-integration.md
+- Updated CLAUDE.md with full project structure
 
 ## What's in flight
-- Nothing
 
 ## What's next
-- tests/ — unit tests for keys, secrets, config, loader
-- repos.py: test the zip fallback path end to end
-- Consider: `claude-setup rotate` subcommand for key rotation
-- Consider: `claude-setup add-account` for adding a second account to a fleet
+- Execute plan Step A: parameterize claude-payload/src/main.py (sys.argv[1], write /opt/github_username)
+- Execute plan Step B: parameterize claude-payload/src/tool.py (read /opt/github_username)
+- Execute plan Step C: add .gitignore to claude-payload
+- Commit and push claude-payload
