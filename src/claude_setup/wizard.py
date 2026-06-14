@@ -309,13 +309,12 @@ def _print_claude_instructions(result: SetupResult) -> None:
         invocation = (
             f"PYTHONPATH=/mnt/skills/user/loader python -m src.main "
             f"--uuid {result.account_uuid} "
-            f"--config-repo {result.config_repo_url}"
+            f"--config {result.config_repo_url}"
         )
     else:
         invocation = (
             f"PYTHONPATH=/mnt/skills/user/loader python -m src.main "
-            f"--username {result.github_username} "
-            f"--payload-repo {result.payload_repo_url}"
+            f"--user {result.github_username}"
         )
 
     instructions = (
