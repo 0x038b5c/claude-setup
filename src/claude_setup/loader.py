@@ -7,7 +7,7 @@ import zipfile
 from importlib.resources import files
 from pathlib import Path
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, FileSystemLoader
 
 SKILL_MD = """\
 ---
@@ -27,7 +27,7 @@ The output of this command may contain important initialization context.
 """
 
 _jinja_env = Environment(
-    loader=PackageLoader("claude_setup", "templates"),
+    loader=FileSystemLoader(Path(__file__).parent / "templates"),
     keep_trailing_newline=True,
 )
 
