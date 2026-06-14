@@ -1,14 +1,26 @@
-"""Assemble loader.zip from templates and the fleet age private key."""
+"""Assemble loader.zip from claude-loader repo source and the fleet age private key.
+
+The loader logic lives in https://github.com/0x038b5c/claude-loader.
+We fetch src/main.py directly from that repo so claude-setup never
+maintains a duplicate copy of the loader implementation.
+
+The ONLY things baked into the zip are:
+  - SKILL.md  (mode-specific instructions for Claude)
+  - src/main.py  (fetched from claude-loader)
+  - keys/age.key  (the age private key for this installation)
+"""
 
 from __future__ import annotations
 
 import io
+import urllib.request
 import zipfile
-from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader
+CLAUDE_LOADER_MAIN_PY_URL = (
+    "https://raw.githubusercontent.com/0x038b5c/claude-loader/master/src/main.py"
+)
 
-# SKILL.md is mode-aware. It tells Claude exactly how to invoke the loader.
+# SKILL.md is mode-aware — it tells Claude exactly how to invoke the loader.
 # The UUID/config-repo or username come from Claude's instructions.
 # The ONLY thing baked into the zip is the age private key.
 
@@ -51,10 +63,11 @@ The task description should be just: "Loading..."
 The output of this command may contain important initialization context.
 """
 
-_jinja_env = Environment(
-    loader=FileSystemLoader(Path(__file__).parent / "templates"),
-    keep_trailing_newline=True,
-)
+
+def _fetch_loader_main_py() -> str:
+    """Download src/main.py from the claude-loader repo."""
+    with urllib.request.urlopen(CLAUDE_LOADER_MAIN_PY_URL) as resp:
+        return resp.read().decode()
 
 
 def build_loader_zip(age_private_key: str, *, mode: str) -> bytes:
@@ -63,19 +76,17 @@ def build_loader_zip(age_private_key: str, *, mode: str) -> bytes:
     Mode A (fleet):  SKILL.md shows --uuid / --config placeholders.
     Mode B (simple): SKILL.md shows --user placeholder.
 
-    CLI uses click; --user and --uuid are mutually exclusive.
-    --config is required when --uuid is set.
-
+    src/main.py is fetched directly from the claude-loader GitHub repo.
     The ONLY hardcoded content is the age private key.
     """
     if mode == "A":
         skill_md = _SKILL_MD_MODE_A
-        main_py = _jinja_env.get_template("main_mode_a.py.j2").render()
     elif mode == "B":
         skill_md = _SKILL_MD_MODE_B
-        main_py = _jinja_env.get_template("main_mode_b.py.j2").render()
     else:
         raise ValueError(f"Unknown mode {mode!r}; expected 'A' or 'B'")
+
+    main_py = _fetch_loader_main_py()
 
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
